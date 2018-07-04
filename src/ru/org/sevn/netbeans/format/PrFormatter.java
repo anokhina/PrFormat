@@ -43,10 +43,18 @@ import org.openide.util.Exceptions;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
+//config constants can be found in java doc for org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 //https://github.com/born2snipe/compare-to-clipboard-nbm
 //https://github.com/markiewb/show-path-in-title-netbeans-module/blob/master/src/de/markiewb/netbeans/plugin/showpathintitle/PathUtil.java#L162
 //http://wiki.netbeans.org/YourFirstNetbeansModule
 //https://platform.netbeans.org/tutorials/nbm-projectsamples.html
+//https://wakatime.com/blog/10-how-to-write-a-netbeans-plugin
+//create netbeans plugin project 
+//add action
+// right-click the project and choose Create NBM
+//see https://github.com/markiewb/eclipsecodeformatter_for_netbeans/blob/master/src/de/markiewb/netbeans/plugins/eclipse/formatter/v46/strategies/eclipse/EclipseFormatter.java
+//to format only selected
+//TODO select format style for unknown files
 @ActionID(
         category = "Edit",
         id = "ru.org.sevn.netbeans.format.PrFormatter"
@@ -443,17 +451,14 @@ public final class PrFormatter implements ActionListener, ConfigurationSource {
     }
     
     private void format(final FileObject editedFile) {
-        final Rectangle visibleRect = EditorRegistry.lastFocusedComponent().getVisibleRect();
-        final Caret caret = EditorRegistry.lastFocusedComponent().getCaret();
+        final int caretpos = EditorRegistry.lastFocusedComponent().getCaretPosition();
         String selectedStr = getSelectedString();
         if (selectedStr == null) {
             selectedStr = selectAll();
         }
         
         setSelectedString(getFormatted(editedFile, selectedStr));
-        if (visibleRect != null) {
-            EditorRegistry.lastFocusedComponent().scrollRectToVisible(visibleRect);
-        }
+        EditorRegistry.lastFocusedComponent().setCaretPosition(caretpos);
     }
     
     private void inform(final String msg) {
